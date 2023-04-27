@@ -9,25 +9,33 @@ You are CourseGPT. You will be given a course and some future skills that need t
 This will be the format of our conversation now.
 
 Example Input: "Course: Evolutionary Algorithms, Future skills: Deep Learning, Reinforcement Learning"
-Example Output: {A list of 5 courses and their urls which you recommend which complement the given course and will also help in learn those future skills.}'''}]
+Example Output: {A list of 5 recommended courses and their urls which complement the given course and will also help in learn those future skills.}'''}]
 @st.cache_data(show_spinner=False)
 def conversation(ui):
     output = chat(ui, st.session_state.message_history)
     return output
 def main():
-    # Set page title
+
+    # Set page title snd details
     if 'search' not in st.session_state:
         st.session_state["search"] = False
     if 'message_history' not in st.session_state:
         st.session_state.message_history = prompt
+    if 'course' not in st.session_state:
+        st.session_state.course = ""
+    if 'future_skill' not in st.session_state:
+        st.session_state.future_skill = ""
     #st.session_state.message_history
     openai.api_key = st.secrets["api_key"]
     if st.session_state["search"] == False:
+        
         title_placeholder = st.empty()
         header_placeholder = st.empty()
+        st.image("./background.jpg")
         course_placeholder = st.empty()
         future_skill_placeholder = st.empty()
         search_placeholder = st.empty()
+        
 
         title_placeholder.title("Curriculum Recommender")
         # Set page header
@@ -35,31 +43,33 @@ def main():
         
         # Create search bar for Course and Future Skill
         course = course_placeholder.text_input("Course",value="Deep Learning")
+        st.session_state["course"] = course
         future_skill = future_skill_placeholder.text_input("Future Skill to Learn", "Face Recogntion, Django, AWS S3")
+        st.session_state["future_skill"]= future_skill
         
         # Create search button
         search = search_placeholder.button("Search")
-    if search:
-        st.session_state.search = True
+        if search:
+            st.session_state.search = True
         
     # If search button is clicked
     if st.session_state.search:
         # Hide search bar
-        title_placeholder.empty()
-        header_placeholder.empty()
-        course_placeholder.empty()
-        future_skill_placeholder.empty()
-        search_placeholder.empty()
+        try:
+            
+            title_placeholder.empty()
+            header_placeholder.empty()
+            course_placeholder.empty()
+            future_skill_placeholder.empty()
+            search_placeholder.empty()
+        except:
+            pass
         
         # Move text boxes to side navigation bar
         st.sidebar.title("Search Parameters")
-        st.sidebar.write(f"Course: {course}")
-        st.sidebar.write(f"Future Skill to Learn: {future_skill}")
-        clear = st.sidebar.button("Go Back")
-        if clear:
-            #st.cache_data.clear()
-            st.session_state.search = False
-        user_input = f"Course: {course}, Future Skills: {future_skill}. Make sure you bold the course names and give the urls and the descriptions for each course."
+        st.sidebar.write(f"Course: {st.session_state.course}")
+        st.sidebar.write(f"Future Skill to Learn: {st.session_state.future_skill}")
+        user_input = f"Course: {st.session_state.course}, Future Skills: {st.session_state.future_skill}. Make sure you bold the course names and give the urls and the descriptions for each course."
         
         with st.spinner("Finding the best courses..."):
             output = conversation(user_input)
@@ -67,7 +77,7 @@ def main():
         output_broken = output.split("\n")[2:-2]
         while "" in output_broken:
             output_broken.remove("")
-        print(output_broken)
+        #print(output_broken)
         all_titles = []
         all_urls = []
         for i in output_broken:
@@ -89,7 +99,10 @@ def main():
             out = ". ".join(sentences) + "."
             all_tabs[i].write(out)
             all_tabs[i].write("Link: "+all_urls[i])
-        #all_urls
+        for i in range(len(all_tabs)):
+            all_tabs[i].header("**Why choose this course?**")
+            with st.spinner("Finding details..."):
+                all_tabs[i].write(conversation(f"Why choose the {all_titles[i]} course? What are its benefits. Give a 50 word answer to this."))
 
 if __name__ == "__main__":
     main()

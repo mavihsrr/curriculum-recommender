@@ -1,4 +1,5 @@
 # Course Recommender
+![alt text](./readme_utils/img.png)
 
 ## SEPM Project
 This recommender is the project for our Software Engineering and Project Management course in our university.
