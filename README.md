@@ -8,6 +8,6 @@ This application uses ChatGPT that recommends courses based on the course you wa
 ## Installing on PC
 To run this in your local PC, enter these commands in terminal:
 ```
-$ pip install requirements.txt
+$ pip install -r requirements.txt
 $ streamlit run app.py
 ```
