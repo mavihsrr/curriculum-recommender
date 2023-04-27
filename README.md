@@ -1,5 +1,9 @@
 # Course Recommender
 
+## SEPM Project
+This recommender is the project for our Software Engineering and Project Management course in our university.
+This application uses ChatGPT that recommends courses based on the course you want to learn and the skills you want to develop.
+
 To run this in your local PC, enter these commands in terminal:
 ```
 $ pip install requirements.txt
